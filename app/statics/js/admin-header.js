@@ -599,6 +599,15 @@ window.renderAdminHeader = async function renderAdminHeader() {
                 </button>
               </div>
             </div>
+            <button type="button" class="btn admin-header-control admin-header-icon-btn" id="hd-theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-icon-moon">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-icon-sun" style="display:none">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            </button>
             <button onclick="adminLogout()" class="btn admin-header-control admin-header-icon-btn" id="hd-logout" aria-label="Logout" title="Logout">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -620,6 +629,10 @@ window.renderAdminHeader = async function renderAdminHeader() {
   applyHeaderI18n();
   applyVersion();
   syncLanguageMenu?.();
+
+  if (typeof window._grok2apiThemeBindToggle === 'function') {
+    window._grok2apiThemeBindToggle(mount);
+  }
 
   const versionModal = ensureVersionModal();
   versionModal.querySelector('#admin-version-modal-refresh')?.addEventListener('click', async () => {

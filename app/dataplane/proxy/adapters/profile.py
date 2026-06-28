@@ -6,7 +6,7 @@ import re
 from typing import get_args
 
 from app.control.proxy.config import resolve_clearance_config
-from app.control.proxy.models import ProxyLease
+from app.control.proxy.models import ClearanceMode, ProxyLease
 
 
 @dataclass(frozen=True)
@@ -84,7 +84,10 @@ def resolve_proxy_profile(lease: ProxyLease | None) -> ProxyProfile:
     is derived from the effective User-Agent first, keeping header UA,
     client-hints and curl_cffi impersonation aligned.
     """
+    from app.platform.config.snapshot import get_config
+
     cfg = resolve_clearance_config()
+    mode = ClearanceMode.parse(get_config().get_str("proxy.clearance.mode", "none"))
 
     if lease is not None:
         cookies = lease.cf_cookies or cfg.cf_cookies
@@ -97,11 +100,14 @@ def resolve_proxy_profile(lease: ProxyLease | None) -> ProxyProfile:
         user_agent = cfg.user_agent
         clearance = cfg.cf_clearance
 
-    browser = (
-        browser_from_user_agent(user_agent)
-        or _supported_browser(cfg.browser)
-        or "chrome120"
-    )
+    if mode == ClearanceMode.NONE:
+        browser = ""
+    else:
+        browser = (
+            browser_from_user_agent(user_agent)
+            or _supported_browser(cfg.browser)
+            or "chrome120"
+        )
 
     return ProxyProfile(
         cf_cookies=cookies,
